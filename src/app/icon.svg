@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="#3155F4" stroke="#181818" stroke-width="4"/>
+  <!-- cockpit dome -->
+  <path d="M22 30c0-7 4.5-12 10-12s10 5 10 12z" fill="#BFF3F6" stroke="#181818" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="32" cy="26" r="3.2" fill="#181818"/>
+  <!-- saucer body -->
+  <ellipse cx="32" cy="35" rx="23" ry="8.5" fill="#F3F0E8" stroke="#181818" stroke-width="3"/>
+  <ellipse cx="32" cy="38" rx="23" ry="5.5" fill="#3E9C93" opacity="0.0"/>
+  <path d="M10 36c4 6 12 8 22 8s18-2 22-8" fill="none" stroke="#181818" stroke-width="3" stroke-linecap="round"/>
+  <!-- lights -->
+  <circle cx="20" cy="37" r="2" fill="#D1EF47" stroke="#181818" stroke-width="1.2"/>
+  <circle cx="32" cy="40" r="2" fill="#FF5A36" stroke="#181818" stroke-width="1.2"/>
+  <circle cx="44" cy="37" r="2" fill="#D1EF47" stroke="#181818" stroke-width="1.2"/>
+  <!-- beam -->
+  <path d="M26 48h12l3 8H23z" fill="#D1EF47" opacity="0.9"/>
+</svg>
