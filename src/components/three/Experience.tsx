@@ -132,7 +132,7 @@ export function Experience() {
 
   return (
     <div
-      className="fixed inset-0 z-0 select-none"
+      className="absolute inset-0 z-0 select-none"
       onPointerDown={(e) => {
         // On touch devices, tapping empty space nudges the UFO toward that region
         if (e.pointerType === "touch" || useGame.getState().isTouch) {

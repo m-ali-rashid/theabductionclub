@@ -7,9 +7,9 @@ import "@fontsource/ibm-plex-mono/600.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "THE ABDUCTION CLUB — Interactive 3D Designer Art Toy Playground",
+  title: "THE ABDUCTION CLUB — Creative AI Product & Engineering Studio",
   description:
-    "Three objects. One very curious UFO. An interactive 3D designer vinyl toy playground and creative engineering portfolio.",
+    "We abduct boring workflows. We build intelligent agents, automate complex workflows, and turn ambitious AI ideas into useful digital products.",
 };
 
 export default function RootLayout({

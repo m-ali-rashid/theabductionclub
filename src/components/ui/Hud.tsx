@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { useGame, TOTAL } from "@/store/useGame";
 import {
@@ -10,6 +11,7 @@ import {
   pad2,
   type CollectibleId,
 } from "@/data/collectibles";
+import { ACCENT_HEX, PROJECTS, STUDIO_POSITIONING } from "@/data/projects";
 import { sfx } from "@/lib/sound";
 
 type ModalMode = null | "about" | "work" | { type: "detail"; id: CollectibleId };
@@ -70,7 +72,7 @@ export function Hud() {
   const busy = phase !== "idle";
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-10 flex flex-col justify-between">
+    <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between">
       {/* ── TOP BAR ─────────────────────────────────────────────────────── */}
       <header
         data-nofly
@@ -87,13 +89,19 @@ export function Hud() {
               THE ABDUCTION CLUB
             </div>
             <div className="hidden font-mono text-[10px] tracking-widest text-ink/70 sm:block">
-              DESIGNER ART TOY PLAYGROUND · 001
+              CREATIVE AI PRODUCT &amp; ENGINEERING STUDIO
             </div>
           </div>
         </div>
 
-        {/* Top-right navigation: WORK / ABOUT / SOUND + Collection Counter */}
-        <nav aria-label="Primary" className="flex shrink-0 items-center gap-1 sm:gap-2.5">
+        {/* Top-right navigation: THE COLLECTION / WORK / ABOUT / SOUND + Collection Counter */}
+        <nav aria-label="Primary" className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <a
+            href="#collection"
+            className="hidden md:inline-flex items-center gap-1.5 border-2 border-ink bg-electric-cobalt px-2.5 py-1 text-xs font-semibold tracking-wider whitespace-nowrap uppercase text-white hard-shadow-sm hard-shadow-hover cursor-pointer"
+          >
+            <span>THE COLLECTION (06) ↓</span>
+          </a>
           <button
             type="button"
             onClick={() => setModal(modal === "work" ? null : "work")}
@@ -101,7 +109,7 @@ export function Hud() {
               modal === "work" ? "bg-electric-cobalt text-white" : "bg-canvas-bg text-ink"
             }`}
           >
-            WORK
+            PROJECTS
           </button>
           <button
             type="button"
@@ -110,7 +118,7 @@ export function Hud() {
               modal === "about" ? "bg-electric-cobalt text-white" : "bg-canvas-bg text-ink"
             }`}
           >
-            ABOUT
+            STUDIO
           </button>
           <button
             type="button"
@@ -165,7 +173,7 @@ export function Hud() {
             ref={cardRef}
             data-nofly
             aria-label={`Collected ${panelItem.name}`}
-            className="pointer-events-auto absolute right-3 top-3 w-[min(92vw,340px)] border-2 border-ink bg-canvas-bg p-4 hard-shadow-lg sm:right-7 sm:top-5 sm:p-5"
+            className="pointer-events-auto absolute right-3 top-3 w-[min(92vw,350px)] border-2 border-ink bg-canvas-bg p-4 hard-shadow-lg sm:right-7 sm:top-5 sm:p-5"
           >
             <div className="flex items-center justify-between border-b-[1.5px] border-ink/20 pb-3">
               <span className="inline-flex items-center gap-1.5 border-[1.5px] border-ink bg-acid-chartreuse px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-ink">
@@ -209,13 +217,20 @@ export function Hud() {
               </div>
             </div>
 
-            <div className="mt-4 flex items-center justify-between border-t-[1.5px] border-ink/20 pt-3.5">
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t-[1.5px] border-ink/20 pt-3.5">
+              <Link
+                href={`/projects/${panelItem.featuredProjectSlug}`}
+                className="border-2 border-ink bg-electric-cobalt px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-white hard-shadow-sm hard-shadow-hover cursor-pointer"
+              >
+                CASE STUDY →
+              </Link>
+
               <button
                 type="button"
                 onClick={() => setModal({ type: "detail", id: panelItem.id })}
-                className="border-2 border-ink bg-electric-cobalt px-3.5 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-white hard-shadow-sm hard-shadow-hover cursor-pointer"
+                className="border-2 border-ink bg-canvas-bg px-2.5 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-ink hard-shadow-sm hard-shadow-hover cursor-pointer"
               >
-                OPEN DOSSIER →
+                DOSSIER
               </button>
 
               {/* Quick jump to next uncollected collectible if available */}
@@ -244,12 +259,18 @@ export function Hud() {
             className="pointer-events-auto absolute left-3 top-3 max-w-xs border-2 border-ink bg-acid-chartreuse p-3.5 hard-shadow sm:left-7 sm:top-5 sm:max-w-sm sm:p-4"
           >
             <div className="font-mono text-[10px] font-bold uppercase tracking-widest text-ink/80">
-              03 / 03 SPECIMENS IN ORBIT
+              03 / 03 STAGE SPECIMENS IN ORBIT
             </div>
             <div className="mt-1 font-headline text-lg font-extrabold leading-none tracking-tight text-ink sm:text-xl">
-              EVERYTHING IS GONE. NICE WORK.
+              STAGE CLEARED. EXPLORE ALL 6 AI SYSTEMS BELOW.
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-2">
+              <a
+                href="#collection"
+                className="border-2 border-ink bg-electric-cobalt px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-white hard-shadow-sm hard-shadow-hover cursor-pointer"
+              >
+                THE COLLECTION ↓
+              </a>
               <button
                 type="button"
                 onClick={() => {
@@ -258,14 +279,7 @@ export function Hud() {
                 }}
                 className="border-2 border-ink bg-ink px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-acid-chartreuse hard-shadow-sm hard-shadow-hover cursor-pointer"
               >
-                REPLAY SCENE ↺
-              </button>
-              <button
-                type="button"
-                onClick={() => setModal("work")}
-                className="border-2 border-ink bg-canvas-bg px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-ink hard-shadow-sm hard-shadow-hover cursor-pointer"
-              >
-                VIEW ALL WORK
+                REPLAY ↺
               </button>
             </div>
           </div>
@@ -277,20 +291,24 @@ export function Hud() {
         {/* Main asymmetrical editorial headline block */}
         <div
           data-nofly
-          className="pointer-events-none max-w-md px-4 pb-3 sm:max-w-xl sm:px-7 sm:pb-5"
+          className="pointer-events-none max-w-lg px-4 pb-3 sm:max-w-2xl sm:px-7 sm:pb-5"
         >
           <div className="inline-flex items-center gap-2 border-2 border-ink bg-canvas-bg px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-ink hard-shadow-sm sm:text-[11px]">
             <span className="h-2 w-2 border border-ink bg-vermilion" />
-            <span>Three objects. One very curious UFO.</span>
+            <span>AI AGENTS · ENTERPRISE RAG · WORKFLOW AUTOMATION</span>
           </div>
 
-          <h1 className="mt-2.5 font-headline text-[2.6rem] font-extrabold leading-[0.9] tracking-[-0.04em] text-ink uppercase sm:text-[4.25rem]">
-            NOTHING IS{" "}
+          <h1 className="mt-2.5 font-headline text-[2.2rem] font-extrabold leading-[0.92] tracking-[-0.04em] text-ink uppercase sm:text-[3.75rem]">
+            WE ABDUCT{" "}
             <span className="relative inline-block text-electric-cobalt">
-              SAFE.
+              BORING WORKFLOWS.
               <span className="absolute -bottom-1 left-0 h-1.5 w-full bg-vermilion" />
             </span>
           </h1>
+
+          <p className="mt-2.5 max-w-xl border-l-4 border-ink bg-canvas-bg/90 pl-3 py-1 text-xs font-medium leading-snug text-ink/90 sm:text-sm">
+            {STUDIO_POSITIONING.supportingCopy}
+          </p>
         </div>
 
         {/* Bottom control strip */}
@@ -311,6 +329,13 @@ export function Hud() {
               <span className="h-1.5 w-1.5 rounded-full bg-ink" />
               {pad2(captured.length)} / {pad2(TOTAL)}
             </span>
+
+            <a
+              href="#collection"
+              className="inline-flex items-center gap-1.5 border-[1.5px] border-ink bg-vermilion px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-white hard-shadow-sm hard-shadow-hover sm:text-[11px]"
+            >
+              <span>BROWSE 6 AI PROJECTS ↓</span>
+            </a>
           </div>
 
           {/* Accessible HTML Collectible Selector + Replay */}
@@ -372,7 +397,7 @@ export function Hud() {
           role="dialog"
           aria-modal="true"
           onClick={() => setModal(null)}
-          className="pointer-events-auto fixed inset-0 z-30 flex items-center justify-center bg-ink/45 p-4"
+          className="pointer-events-auto fixed inset-0 z-50 flex items-center justify-center bg-ink/45 p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -476,16 +501,13 @@ function DetailSheet({
       </div>
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t-2 border-ink pt-4">
-        <div className="flex flex-wrap gap-1.5">
-          {item.detail.tools.map((t) => (
-            <span
-              key={t}
-              className="border border-ink bg-canvas-bg px-2 py-0.5 font-mono text-[11px] font-semibold text-ink"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
+        <Link
+          href={`/projects/${item.featuredProjectSlug}`}
+          onClick={onClose}
+          className="border-2 border-ink bg-electric-cobalt px-3.5 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-white hard-shadow-sm hard-shadow-hover"
+        >
+          OPEN FULL CASE STUDY →
+        </Link>
 
         <div className="flex items-center gap-1.5">
           {COLLECTIBLES.map((c) => (
@@ -509,7 +531,7 @@ function DetailSheet({
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Work Index Sheet                                                          */
+/*  Work Index Sheet (Stage Spec + All 6 AI Projects)                         */
 /* -------------------------------------------------------------------------- */
 
 function WorkIndex({
@@ -529,7 +551,7 @@ function WorkIndex({
     <div>
       <div className="flex items-center justify-between border-b-2 border-ink pb-3">
         <span className="font-mono text-xs font-semibold uppercase tracking-widest text-ink">
-          EDITION CATALOGUE · 01 — 03
+          THE COLLECTION · 001 — 006 AI SYSTEMS
         </span>
         <button
           type="button"
@@ -540,57 +562,80 @@ function WorkIndex({
         </button>
       </div>
 
-      <div className="mt-4 space-y-3">
-        {COLLECTIBLES.map((c) => {
-          const isCollected = captured.includes(c.id);
-          return (
-            <div
-              key={c.id}
-              className="flex flex-col justify-between gap-3 border-2 border-ink p-4 hard-shadow-sm sm:flex-row sm:items-center"
-            >
-              <div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className="h-3 w-3 border border-ink"
-                    style={{ backgroundColor: COLOR_HEX[c.color] }}
-                  />
-                  <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-ink/70">
-                    {pad2(c.index)} · {c.name}
-                  </span>
-                  {isCollected && (
-                    <span className="border border-ink bg-acid-chartreuse px-1.5 py-0.2 font-mono text-[10px] font-bold uppercase text-ink">
-                      CAPTURED
-                    </span>
-                  )}
-                </div>
-                <h3 className="mt-1 font-headline text-lg font-extrabold uppercase text-ink">
-                  {c.category}
-                </h3>
-                <p className="mt-1 text-xs text-ink/80">{c.summary}</p>
+      {/* All 6 Featured AI Projects Direct Directory */}
+      <div className="mt-4 space-y-2.5">
+        {PROJECTS.map((project) => (
+          <div
+            key={project.slug}
+            className="flex flex-col justify-between gap-3 border-2 border-ink p-3.5 hard-shadow-sm sm:flex-row sm:items-center"
+          >
+            <div>
+              <div className="flex items-center gap-2">
+                <span
+                  className="h-3 w-3 border border-ink"
+                  style={{ backgroundColor: ACCENT_HEX[project.accentColor] }}
+                />
+                <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-ink">
+                  PROJECT {project.number} · {project.name}
+                </span>
+                <span className="font-mono text-[10px] uppercase text-ink/60">
+                  {project.category}
+                </span>
               </div>
+              <p className="mt-1 text-xs font-semibold text-ink/85">
+                &ldquo;{project.headline}&rdquo;
+              </p>
+            </div>
 
-              <div className="flex shrink-0 items-center gap-2">
-                {!isCollected && (
+            <div className="flex shrink-0 items-center gap-2">
+              <Link
+                href={`/projects/${project.slug}`}
+                onClick={onClose}
+                className="border-2 border-ink bg-electric-cobalt px-3 py-1.5 font-mono text-xs font-semibold uppercase text-white hard-shadow-sm hard-shadow-hover"
+              >
+                VIEW PROJECT →
+              </Link>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Hero Stage Interactive Specimens */}
+      <div className="mt-6 border-t-2 border-ink pt-4">
+        <div className="font-mono text-[10px] font-bold uppercase tracking-widest text-ink/65 mb-2.5">
+          UFO STAGE SPECIMENS (TRACTOR BEAM TARGETS)
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          {COLLECTIBLES.map((c) => {
+            const isCollected = captured.includes(c.id);
+            return (
+              <div key={c.id} className="border border-ink p-2.5 bg-canvas-bg">
+                <div className="font-mono text-[10px] font-bold uppercase text-ink">
+                  {pad2(c.index)} · {c.name}
+                </div>
+                <div className="mt-2 flex items-center gap-1.5">
+                  {!isCollected && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => onAbduct(c.id)}
+                      className="border border-ink bg-vermilion px-2 py-1 font-mono text-[10px] font-bold uppercase text-white cursor-pointer disabled:opacity-40"
+                    >
+                      ABDUCT
+                    </button>
+                  )}
                   <button
                     type="button"
-                    disabled={busy}
-                    onClick={() => onAbduct(c.id)}
-                    className="border-2 border-ink bg-vermilion px-3 py-1.5 font-mono text-xs font-semibold uppercase text-white hard-shadow-sm hard-shadow-hover disabled:opacity-40 cursor-pointer"
+                    onClick={() => onSelectDetail(c.id)}
+                    className="border border-ink bg-ink px-2 py-1 font-mono text-[10px] font-bold uppercase text-acid-chartreuse cursor-pointer"
                   >
-                    ABDUCT
+                    DOSSIER
                   </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => onSelectDetail(c.id)}
-                  className="border-2 border-ink bg-electric-cobalt px-3 py-1.5 font-mono text-xs font-semibold uppercase text-white hard-shadow-sm hard-shadow-hover cursor-pointer"
-                >
-                  DOSSIER →
-                </button>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -605,7 +650,7 @@ function AboutSheet({ onClose }: { onClose: () => void }) {
     <div>
       <div className="flex items-center justify-between border-b-2 border-ink pb-3">
         <span className="font-mono text-xs font-semibold uppercase tracking-widest text-ink">
-          ABOUT THE ABDUCTION CLUB
+          STUDIO POSITIONING // THE ABDUCTION CLUB
         </span>
         <button
           type="button"
@@ -617,23 +662,36 @@ function AboutSheet({ onClose }: { onClose: () => void }) {
       </div>
 
       <h2 className="mt-4 font-headline text-2xl font-extrabold uppercase tracking-tight text-ink sm:text-3xl">
-        LIMITED-EDITION TOYS FOR DIGITAL ENGINEERING.
+        WE ABDUCT BORING WORKFLOWS.
       </h2>
       <p className="mt-3 text-sm leading-relaxed font-medium text-ink/85">
-        THE ABDUCTION CLUB is an interactive 3D toy stage and portfolio. Instead of a
-        scrolling resume, three designer vinyl collectibles sit on a modular plinth —
-        each representing a core discipline: mobile banking engineering, AI agents &amp;
-        automation, and creative coding experiments.
-      </p>
-      <p className="mt-3 text-sm leading-relaxed font-medium text-ink/85">
-        Pilot the saucer across the stage, lock onto a specimen with the tractor beam,
-        and inspect the engineering dossier inside.
+        {STUDIO_POSITIONING.supportingCopy}
       </p>
 
-      <div className="mt-5 flex flex-wrap gap-2 border-t-2 border-ink pt-4 font-mono text-[11px] font-semibold uppercase text-ink/75">
-        <span className="border border-ink px-2 py-0.5">NEXT.JS + R3F</span>
-        <span className="border border-ink px-2 py-0.5">THREE.JS + GSAP</span>
-        <span className="border border-ink px-2 py-0.5">WEB AUDIO SYNTH</span>
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        {STUDIO_POSITIONING.capabilities.map((cap) => (
+          <div key={cap.id} className="border-2 border-ink p-3 bg-canvas-bg hard-shadow-sm">
+            <div className="font-headline text-xs font-extrabold uppercase text-ink">
+              {cap.title}
+            </div>
+            <p className="mt-1 text-[11px] text-ink/75 leading-snug">{cap.description}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t-2 border-ink pt-4">
+        <a
+          href="#collection"
+          onClick={onClose}
+          className="border-2 border-ink bg-electric-cobalt px-3.5 py-1.5 font-mono text-xs font-semibold uppercase text-white hard-shadow-sm"
+        >
+          EXPLORE THE COLLECTION (001—006) ↓
+        </a>
+        <div className="flex flex-wrap gap-1.5 font-mono text-[10px] font-semibold uppercase text-ink/75">
+          <span className="border border-ink px-2 py-0.5">AGENTS &amp; RAG</span>
+          <span className="border border-ink px-2 py-0.5">MCP &amp; LANGGRAPH</span>
+          <span className="border border-ink px-2 py-0.5">VISION &amp; VOICE AI</span>
+        </div>
       </div>
     </div>
   );

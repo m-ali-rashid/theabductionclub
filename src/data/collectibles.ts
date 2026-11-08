@@ -1,9 +1,7 @@
 /**
- * THE ABDUCTION CLUB — collectible + portfolio content.
- *
- * Everything a visitor reads lives here. Edit freely: titles, copy, focus
- * areas and tool lists are plain data. No fictional metrics or external links
- * are included on purpose — add real project links to `links` when you have them.
+ * THE ABDUCTION CLUB — Hero Diorama Specimens (the 3 stage collectibles in the playable UFO scene)
+ * Each specimen on the hero stage represents a pillar of our AI engineering studio
+ * and links directly into our six featured AI projects.
  */
 
 export type CollectibleId = "monolith" | "signal" | "oddtree";
@@ -18,7 +16,7 @@ export type Collectible = {
   name: string;
   /** Short collectible ID printed on the packaging (IBM Plex Mono). */
   serial: string;
-  /** Portfolio category the toy represents. */
+  /** AI studio pillar the toy represents. */
   category: string;
   /** One-liner on the discovery card. */
   summary: string;
@@ -26,6 +24,8 @@ export type Collectible = {
   color: "cobalt" | "vermilion" | "chartreuse";
   /** Material / edition notes for the packaging. */
   edition: string[];
+  /** Featured AI project slug to jump directly to from the discovery card. */
+  featuredProjectSlug: string;
   detail: {
     intro: string;
     focus: { title: string; body: string }[];
@@ -40,99 +40,111 @@ export const COLLECTIBLES: Collectible[] = [
     id: "monolith",
     index: 1,
     name: "The Monolith",
-    serial: "TAC-001 / MNL",
-    category: "Mobile Engineering & Banking",
+    serial: "TAC-001 / ENT",
+    category: "Enterprise Knowledge & Document AI",
     summary:
-      "Native mobile products for finance, where reliability, security and clarity matter as much as the interface.",
+      "Permission-aware RAG knowledge systems and multimodal document intelligence that turn scattered files into structured truth.",
     color: "cobalt",
-    edition: ["Cobalt resin", "Load-bearing"],
+    edition: ["Cobalt resin", "SIGNAL + VAULT"],
+    featuredProjectSlug: "signal",
     detail: {
       intro:
-        "The Monolith stands for the solid, structural side of the work: mobile apps that move money and therefore have to be correct, fast and trustworthy every single time.",
+        "The Monolith represents the foundational data and knowledge layer of our studio: connecting internal documents, policies, invoices, and contracts into cited, schema-validated intelligence.",
       focus: [
         {
-          title: "Native iOS & Android",
-          body: "Building and maintaining production mobile apps with a focus on performance, accessibility and maintainable architecture.",
+          title: "SIGNAL — Enterprise AI / RAG",
+          body: "Hybrid semantic + lexical retrieval with document-level ACL enforcement and inline source citations.",
         },
         {
-          title: "Banking-grade flows",
-          body: "Onboarding, authentication, payments and account experiences designed around security requirements without sacrificing usability.",
+          title: "VAULT — Document Intelligence",
+          body: "OCR and vision-language extraction paired with deterministic validation gates and human review workflows.",
         },
         {
-          title: "Architecture & quality",
-          body: "Modular codebases, testing strategy, release pipelines and the unglamorous engineering that keeps apps stable at scale.",
+          title: "Grounded Reliability",
+          body: "Engineered to abstain when evidence is missing and validate every extracted number before export.",
         },
       ],
-      tools: ["Swift", "SwiftUI", "Kotlin", "Jetpack Compose", "CI/CD"],
+      tools: ["Python", "FastAPI", "LangChain", "Vision Models", "Vector DB"],
       approach:
-        "Treat every screen like a load-bearing wall: simple on the surface, carefully engineered underneath.",
-      links: [],
+        "Treat retrieval and extraction like load-bearing architecture: verifiable inputs, strict schemas, and explicit provenance.",
+      links: [
+        { label: "CASE STUDY: 001 SIGNAL →", href: "/projects/signal" },
+        { label: "CASE STUDY: 003 VAULT →", href: "/projects/vault" },
+      ],
     },
   },
   {
     id: "signal",
     index: 2,
     name: "The Signal",
-    serial: "TAC-002 / SGN",
-    category: "AI, Agents & Automation",
+    serial: "TAC-002 / AGT",
+    category: "Conversational & Voice AI Systems",
     summary:
-      "Language models, agents and automations wired into real workflows — less demo, more dependable signal.",
+      "Full-duplex voice assistants and customer resolution agents wired directly into live calendars, CRMs, and support tools.",
     color: "vermilion",
-    edition: ["Vermilion vinyl", "Always listening"],
+    edition: ["Vermilion vinyl", "ORBIT + ECHO"],
+    featuredProjectSlug: "orbit",
     detail: {
       intro:
-        "The Signal is the transmitter: systems that listen, reason and act. It covers experiments and tools built around LLMs, agentic workflows and automation.",
+        "The Signal stands for conversational systems that don't just chat — they look up live records, book appointments over voice, execute policy-checked actions, and hand off cleanly to humans.",
       focus: [
         {
-          title: "Agentic workflows",
-          body: "Designing agents that use tools, plan multi-step tasks and hand control back to people at the right moments.",
+          title: "ORBIT — Customer Resolution AI",
+          body: "Context-aware support conversations combining RAG policy lookup with authenticated CRM & order tool execution.",
         },
         {
-          title: "LLM-powered product features",
-          body: "Prompting, retrieval, evaluation and guardrails for features that need to behave predictably in front of users.",
+          title: "ECHO — Real-Time Voice AI",
+          body: "Low-latency WebSocket speech-to-text, barge-in handling, live scheduling tools, and streaming TTS.",
         },
         {
-          title: "Automation",
-          body: "Connecting services and scripts so repetitive work disappears quietly into the background.",
+          title: "Human-Ready Handoffs",
+          body: "Every conversation produces structured summaries, transcripts, and action receipts.",
         },
       ],
-      tools: ["TypeScript", "Python", "LLM APIs", "Tool calling", "Evaluations"],
+      tools: ["TypeScript", "Python", "WebSockets", "Speech APIs", "LLM APIs"],
       approach:
-        "Start from the workflow, not the model. The best automation is the one nobody has to think about.",
-      links: [],
+        "Latency and tool guardrails define great conversational AI. Listen accurately, verify critical details, and act safely.",
+      links: [
+        { label: "CASE STUDY: 004 ORBIT →", href: "/projects/orbit" },
+        { label: "CASE STUDY: 006 ECHO →", href: "/projects/echo" },
+      ],
     },
   },
   {
     id: "oddtree",
     index: 3,
     name: "The Odd Tree",
-    serial: "TAC-003 / ODT",
-    category: "Creative Coding & Experiments",
+    serial: "TAC-003 / AUT",
+    category: "Agentic Automation & Developer Tools",
     summary:
-      "Interactive 3D, generative visuals and playful prototypes — the place where ideas grow sideways.",
+      "Stateful LangGraph orchestrations and MCP-powered engineering teammates that think before they act.",
     color: "chartreuse",
-    edition: ["Acid resin", "Grows sideways"],
+    edition: ["Acid resin", "PATCH + RELAY"],
+    featuredProjectSlug: "relay",
     detail: {
       intro:
-        "The Odd Tree is the experimental branch: real-time graphics, interaction design and small weird prototypes — including this site.",
+        "The Odd Tree represents branching, multi-step agency: developer intelligence systems that inspect repositories and pull requests, and stateful workflow engines with human approval gates.",
       focus: [
         {
-          title: "Real-time 3D on the web",
-          body: "Three.js and React Three Fiber scenes with art-directed lighting, motion and interaction, built to run smoothly in the browser.",
+          title: "PATCH — Engineering Intelligence",
+          body: "Connects Git repositories and Azure DevOps via MCP to analyze pull requests and align diffs with work items.",
         },
         {
-          title: "Motion & interaction",
-          body: "Choreographed transitions and tactile micro-interactions that make interfaces feel physical.",
+          title: "RELAY — Agentic Orchestration",
+          body: "LangGraph state machines with persistent checkpointing, dynamic tool calling, and human-in-the-loop approvals.",
         },
         {
-          title: "Prototypes & toys",
-          body: "Fast experiments used to test an idea, a feeling or a technique before it becomes a product.",
+          title: "Bounded Autonomy",
+          body: "Agents reason inside explicit graph transitions with retry recovery and full execution logs.",
         },
       ],
-      tools: ["Three.js", "React Three Fiber", "GLSL", "GSAP", "Next.js"],
+      tools: ["TypeScript", "Python", "LangGraph", "MCP", "Azure DevOps API"],
       approach:
-        "Make it playable first. If it is fun to poke at, it is usually worth refining.",
-      links: [],
+        "Start from the workflow, not the prompt. Bound agent reasoning inside state machines that operators can inspect and approve.",
+      links: [
+        { label: "CASE STUDY: 002 PATCH →", href: "/projects/patch" },
+        { label: "CASE STUDY: 005 RELAY →", href: "/projects/relay" },
+      ],
     },
   },
 ];
