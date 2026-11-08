@@ -37,6 +37,9 @@ const HEAD_PARTS = [
 const BODY_PARTS = ["Robot_Body", "Robot_Neck", "Robot_Arm_1", "Robot_Hand_1", "Robot_Arm_2", "Robot_Hand_2"];
 const HEAD_PIVOT = new THREE.Vector3(0, 1.3, 0.04);
 const BODY_PIVOT = new THREE.Vector3(0, 0.7, 0);
+// Pilot's right arm (model −X side) hangs from the shoulder at the top of the arm mesh.
+const ARM_PARTS = ["Robot_Arm_1", "Robot_Hand_1"];
+const ARM_PIVOT = new THREE.Vector3(-0.36, 1.24, 0.14);
 
 const tmpV = new THREE.Vector3();
 const tmpV2 = new THREE.Vector2();
@@ -99,6 +102,22 @@ export function Ufo() {
   const parts = useMemo(() => {
     const head = groupParts(scene, "PilotHead", HEAD_PARTS, HEAD_PIVOT);
     const body = groupParts(scene, "PilotBody", BODY_PARTS, BODY_PIVOT);
+    // The GLB is a flat set of static meshes (no skeleton), so the waving arm + hand are
+    // re-parented under a pivot group placed at the shoulder and rotated procedurally.
+    let arm = body.getObjectByName("PilotArm") as THREE.Group | undefined;
+    if (!arm) {
+      arm = new THREE.Group();
+      arm.name = "PilotArm";
+      arm.position.copy(ARM_PIVOT).sub(BODY_PIVOT);
+      body.add(arm);
+      for (const n of ARM_PARTS) {
+        const o = scene.getObjectByName(n);
+        if (!o) continue;
+        o.parent?.remove(o);
+        o.position.sub(arm.position);
+        arm.add(o);
+      }
+    }
     const emissive: THREE.MeshStandardMaterial[] = [];
     scene.traverse((o) => {
       const m = o as THREE.Mesh;
@@ -118,7 +137,7 @@ export function Ufo() {
     const eyes = ["Robot_Smiling_Eye_1", "Robot_Smiling_Eye_2"]
       .map((n) => scene.getObjectByName(n))
       .filter(Boolean) as THREE.Object3D[];
-    return { head, body, emissive, eyes };
+    return { head, body, arm, emissive, eyes };
   }, [scene]);
 
   const sim = useRef({
@@ -262,7 +281,10 @@ export function Ufo() {
     );
 
     // Yaw: face the camera (π/4), sway gently, turn toward focus / hovered object.
-    let yawTarget = Math.PI / 4 + Math.sin(t * 0.35) * 0.22;
+    // During the intro greeting the sway is nearly removed so the pilot truly faces the viewer.
+    const intro = rig.intro;
+    const swayAmt = intro.active ? 0.1 : 1;
+    let yawTarget = Math.PI / 4 + Math.sin(t * 0.35) * 0.22 * swayAmt;
     let focus = ufo.focus;
     if (!focus && g.hoveredId && g.phase === "idle") focus = rig.collectibles[g.hoveredId].base;
     if (focus) {
@@ -281,17 +303,30 @@ export function Ufo() {
     const localVX = ufo.vel.x * Math.cos(s.yaw) - ufo.vel.z * Math.sin(s.yaw);
     s.headYaw = damp(s.headYaw, clamp(localVX * 0.12, -0.5, 0.5) * (1 - pilot), 5, dt);
     s.headPitch = damp(s.headPitch, pilot * 0.42 + (g.hoveredId ? 0.15 : 0), 6, dt);
-    parts.head.rotation.set(s.headPitch, s.headYaw, Math.sin(t * 20) * 0.07 * pilot);
+    if (intro.active) {
+      // Scripted greeting pose (values tweened by IntroDirector).
+      parts.head.rotation.set(intro.headPitch, intro.headYaw, intro.headRoll);
+      s.headYaw = intro.headYaw;
+      s.headPitch = intro.headPitch;
+    } else {
+      parts.head.rotation.set(s.headPitch, s.headYaw, Math.sin(t * 20) * 0.07 * pilot);
+    }
     parts.body.position.y = BODY_PIVOT.y + Math.abs(Math.sin(t * 14)) * 0.05 * pilot;
     parts.body.rotation.z = Math.sin(t * 7) * 0.05 * pilot;
-    // blink — or happy squint while abducting
+    // Wave: arm swings out sideways from the shoulder, then wiggles back and forth.
+    const armRaise = intro.active ? intro.arm : 0;
+    parts.arm.rotation.z =
+      -armRaise * 1.85 + Math.sin(t * 9.5) * 0.3 * intro.wave * armRaise;
+    parts.arm.rotation.x = -armRaise * 0.25;
+    // blink — or happy squint while abducting / greeting
     s.nextBlink -= dt;
     if (s.nextBlink < 0) {
       s.blink = 1;
       s.nextBlink = 2.5 + Math.random() * 3;
     }
     s.blink = damp(s.blink, 0, 14, dt);
-    const eyeY = Math.max(0.12, 1 - s.blink * 0.9 - pilot * 0.45);
+    const happy = intro.active ? intro.happy : 0;
+    const eyeY = Math.max(0.12, 1 - s.blink * 0.9 - pilot * 0.45 - happy * 0.4);
     for (const e of parts.eyes) e.scale.y = eyeY;
 
     // Engine glow

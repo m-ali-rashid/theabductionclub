@@ -17,8 +17,17 @@ export type Phase =
   | "return"
   | "reset";
 
+type IntroPhase = "loading" | "playing" | "done";
+
 type GameState = {
   phase: Phase;
+  /** Cinematic intro lifecycle (never persisted – replays on every refresh). */
+  introPhase: IntroPhase;
+  /** Speech bubble visibility during the intro. */
+  introBubble: boolean;
+  /** HUD / website chrome becomes visible once the camera pulls back. */
+  hudVisible: boolean;
+  setIntro: (v: Partial<Pick<GameState, "introPhase" | "introBubble" | "hudVisible">>) => void;
   activeId: CollectibleId | null;
   hoveredId: CollectibleId | null;
   captured: CollectibleId[];
@@ -42,7 +51,11 @@ type GameState = {
 export const TOTAL = COLLECTIBLES.length;
 
 export const useGame = create<GameState>((set, get) => ({
-  phase: "idle",
+  phase: "intro",
+  introPhase: "loading",
+  introBubble: false,
+  hudVisible: false,
+  setIntro: (v) => set(v),
   activeId: null,
   hoveredId: null,
   captured: [],

@@ -1,18 +1,19 @@
 "use client";
 
-import { Suspense, useEffect, useLayoutEffect } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, OrthographicCamera } from "@react-three/drei";
 import * as THREE from "three";
 import { useGame } from "@/store/useGame";
-import { rig } from "@/lib/rig";
-import { PALETTE } from "@/lib/materials";
+import { rig, UFO_HOME } from "@/lib/rig";
+import { PALETTE, getBlobTexture } from "@/lib/materials";
 import { Ufo } from "./Ufo";
 import { Collectible } from "./Collectible";
 import { Monolith, OddTree, Signal } from "./Toys";
 import { Platform } from "./Platform";
 import { ScanRing, TractorBeam } from "./Effects";
 import { Director } from "./Director";
+import { IntroDirector, resetIntroState } from "./IntroDirector";
 
 /**
  * Responsive isometric orthographic camera.
@@ -22,6 +23,14 @@ import { Director } from "./Director";
 function CameraRig() {
   const { camera, size } = useThree();
   const isTouch = useGame((s) => s.isTouch);
+  const base = useRef({
+    zoom: 75,
+    look: new THREE.Vector3(-0.15, 2.05, 0.2),
+    dir: new THREE.Vector3(-14.15, -11.45, -13.8),
+  });
+  const applied = useRef(false);
+  const focus = useRef(new THREE.Vector3());
+  const look = useRef(new THREE.Vector3());
 
   useLayoutEffect(() => {
     const cam = camera as THREE.OrthographicCamera;
@@ -39,11 +48,39 @@ function CameraRig() {
     cam.position.set(14, 13.5, 14);
     if (portrait || w < 768) {
       cam.lookAt(0.35, 1.85, 0.25);
+      base.current.look.set(0.35, 1.85, 0.25);
     } else {
       cam.lookAt(-0.15, 2.05, 0.2);
+      base.current.look.set(-0.15, 2.05, 0.2);
     }
+    base.current.zoom = cam.zoom;
+    base.current.dir.copy(base.current.look).sub(cam.position);
     cam.updateProjectionMatrix();
   }, [camera, size.width, size.height, isTouch]);
+
+  // Intro: close-up on the UFO, then a smooth pull-back to the normal diorama framing.
+  useFrame(() => {
+    const cam = camera as THREE.OrthographicCamera;
+    if (!cam.isOrthographicCamera) return;
+    const b = base.current;
+    const intro = rig.intro;
+    if (intro.active) {
+      applied.current = true;
+      focus.current.copy(rig.ufo.pos);
+      focus.current.y += 0.2;
+      look.current.copy(focus.current).lerp(b.look, intro.look);
+      cam.zoom = b.zoom * intro.zoom;
+      cam.position.copy(look.current).sub(b.dir);
+      cam.lookAt(look.current);
+      cam.updateProjectionMatrix();
+    } else if (applied.current) {
+      applied.current = false;
+      cam.zoom = b.zoom;
+      cam.position.copy(b.look).sub(b.dir);
+      cam.lookAt(b.look);
+      cam.updateProjectionMatrix();
+    }
+  });
 
   return (
     <OrthographicCamera
@@ -53,6 +90,53 @@ function CameraRig() {
       near={-40}
       far={80}
     />
+  );
+}
+
+/** Platform + collectibles stay hidden during the intro, then rise into place as the camera pulls back. */
+function RevealGroup({ children }: { children: ReactNode }) {
+  const ref = useRef<THREE.Group>(null);
+  useFrame(() => {
+    const g = ref.current;
+    if (!g) return;
+    const r = rig.intro.active ? rig.intro.reveal : 1;
+    g.visible = r > 0.001;
+    g.scale.setScalar(0.88 + 0.12 * r);
+    g.position.y = (1 - r) * -1.4;
+  });
+  return <group ref={ref}>{children}</group>;
+}
+
+/** Soft blob shadow beneath the UFO that only exists during the intro (the platform shadow takes over). */
+function IntroShadow() {
+  const ref = useRef<THREE.Mesh>(null);
+  const mat = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        map: getBlobTexture(),
+        color: "#2a2418",
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+      }),
+    [],
+  );
+  useFrame(() => {
+    const m = ref.current;
+    if (!m) return;
+    const s = rig.intro.active ? rig.intro.shadow : 0;
+    m.visible = s > 0.002;
+    if (!m.visible) return;
+    const lift = Math.max(0, rig.ufo.pos.y - UFO_HOME.y);
+    m.position.set(rig.ufo.pos.x, rig.ufo.pos.y - 1.75, rig.ufo.pos.z);
+    const k = 2.4 * (1 + lift * 0.25);
+    m.scale.set(k, k, 1);
+    mat.opacity = 0.42 * s / (1 + lift * 0.8);
+  });
+  return (
+    <mesh ref={ref} rotation-x={-Math.PI / 2} material={mat} renderOrder={1} visible={false}>
+      <planeGeometry args={[1, 1]} />
+    </mesh>
   );
 }
 
@@ -97,6 +181,11 @@ function StudioLights() {
 
 export function Experience() {
   const isTouch = useGame((s) => s.isTouch);
+
+  // The intro replays on every page load (no sessionStorage skip while we record the promo).
+  useLayoutEffect(() => {
+    resetIntroState();
+  }, []);
 
   useEffect(() => {
     const detectEnv = () => {
@@ -157,20 +246,25 @@ export function Experience() {
         <CameraRig />
         <StudioLights />
         <Suspense fallback={null}>
-          <Platform />
-          <Collectible id="monolith">
-            <Monolith />
-          </Collectible>
-          <Collectible id="signal">
-            <Signal />
-          </Collectible>
-          <Collectible id="oddtree">
-            <OddTree />
-          </Collectible>
+          <RevealGroup>
+            <Platform />
+            <Collectible id="monolith">
+              <Monolith />
+            </Collectible>
+            <Collectible id="signal">
+              <Signal />
+            </Collectible>
+            <Collectible id="oddtree">
+              <OddTree />
+            </Collectible>
+          </RevealGroup>
           <Ufo />
+          <IntroShadow />
           <TractorBeam />
           <ScanRing />
           <Director />
+          {/* Mounts only after the UFO GLB + scene are resolved, then starts the cinematic timeline. */}
+          <IntroDirector />
         </Suspense>
       </Canvas>
     </div>

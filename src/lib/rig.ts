@@ -81,6 +81,33 @@ export const rig = {
     oddtree: { base: new THREE.Vector3(...PLACEMENTS.oddtree.position), anim: makeAnim(), hover: 0 },
     signal: { base: new THREE.Vector3(...PLACEMENTS.signal.position), anim: makeAnim(), hover: 0 },
   } as Record<CollectibleId, CollectibleRuntime>,
+  /**
+   * Cinematic intro state. GSAP (IntroDirector) tweens these values; Ufo, CameraRig
+   * and the reveal group read them every frame. When `active` is false everything is neutral.
+   */
+  intro: {
+    active: false,
+    /** Camera zoom multiplier (>1 = close-up on the UFO). */
+    zoom: 1,
+    /** 0 = camera framed on the UFO, 1 = normal diorama framing. */
+    look: 1,
+    /** 0..1 reveal of the diorama (platform + collectibles). */
+    reveal: 1,
+    /** 0..1 opacity of the soft intro shadow beneath the UFO. */
+    shadow: 0,
+    /** Pilot head pose (radians). Yaw 0 + pitch ≈ -0.5 = looks straight into the camera. */
+    headYaw: 0,
+    headPitch: 0,
+    headRoll: 0,
+    /** 0..1 how far the pilot's arm is raised. */
+    arm: 0,
+    /** 0..1 amplitude of the waving motion. */
+    wave: 0,
+    /** 0..1 happy squint on the eyes. */
+    happy: 0,
+    /** Hand-off helper so the Director can fast-forward the intro. */
+    skip: (() => {}) as () => void,
+  },
   fx: {
     /** 0..1 beam extension. */
     beam: 0,
